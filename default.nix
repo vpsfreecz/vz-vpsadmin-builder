@@ -7,12 +7,15 @@ let
 in
   { nixpkgs ? <nixpkgs>
   , configuration ? nodeConfig
+  , vpsadmin
   , system ? builtins.currentSystem }:
   let
     pkgs = import nixpkgs { inherit system; config = {}; };
 
     baseModules = [
       ./base.nix
+      ./nixos-compat.nix
+      ./modules/vpsadmin/core/node/default.nix
       <nixpkgs/nixos/modules/misc/nixpkgs.nix>
     ];
 
@@ -21,6 +24,7 @@ in
       key = _file;
       config = {
         nixpkgs.system = pkgs.lib.mkDefault system;
+        nixpkgs.overlays = import ./overlays { inherit vpsadmin; };
       };
     };
 
@@ -34,6 +38,5 @@ in
     result = evalConfig (if configuration != null then [configuration] else []);
 
   in rec {
-    runner = result.config.system.build.runner;
     config = result.config;
   }
