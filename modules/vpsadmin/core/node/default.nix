@@ -57,6 +57,8 @@ let
   appConfig = pkgs.writeText "config.exs" ''
     use Mix.Config
 
+    config :vpsadmin_base, :nodectld_socket, "/var/run/vpsadmind.sock"
+
     config :vpsadmin_queue, :queues, [
       {:default, 4}
     ]
